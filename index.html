@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111322">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ren'Py Player">
+<meta name="description" content="Локальная библиотека Ren'Py Web игр для iPhone.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Ren'Py Player</title>
+<style>
+:root{color-scheme:dark;--bg:#10121d;--panel:#191d2d;--line:#2c3147;--muted:#9aa2bb;--text:#f5f6fc;--accent:#a98cff;--accent2:#7658d6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% 0%,#302852 0,transparent 36%),var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+.wrap{max-width:920px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;padding:20px 0}.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#b39aff,#6847c4);display:grid;place-items:center;font-size:23px;color:#151126;box-shadow:0 8px 28px #8060d455}.sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}.pill{border:1px solid #4b426f;color:#d0c4ff;border-radius:999px;padding:7px 11px;font-size:12px}
+.hero{border:1px solid #42365f;background:linear-gradient(120deg,#27213c,#1a2034 70%);border-radius:25px;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:18px;overflow:hidden}.eyebrow{color:#c2afff;font-size:11px;letter-spacing:1.7px;font-weight:800}.hero h1{font-size:clamp(29px,6vw,46px);line-height:1.04;margin:12px 0}.hero h1 span{color:#bba7ff}.hero p{color:#c1c3d1;line-height:1.55;margin:0;max-width:530px}.orb{flex:0 0 120px;width:120px;height:120px;border:1px solid #a98cff66;border-radius:35px;transform:rotate(12deg);display:grid;place-items:center;font-size:58px;color:#c4b2ff;background:#a98cff12;box-shadow:0 0 60px #9471ff25}
+.section{display:flex;align-items:end;justify-content:space-between;margin:30px 0 15px}.section h2{margin:5px 0 0;font-size:24px}.count{font-size:12px;background:#2a2d41;color:#c9cce0;border-radius:99px;padding:4px 8px;vertical-align:middle;margin-left:5px}
+.btn{border:0;border-radius:14px;padding:13px 17px;font-weight:750;font-size:14px;background:linear-gradient(135deg,#b49cff,#8b6ce6);color:#19132b;cursor:pointer;box-shadow:0 8px 24px #8665df35}.btn:disabled{opacity:.55}.btn.secondary{background:#292d42;color:#eee;border:1px solid #41465e;box-shadow:none}.empty{border:1px dashed #42465e;background:#171a29;border-radius:20px;text-align:center;padding:35px 20px}.empty .book{font-size:42px}.empty h3{margin:10px 0 7px}.empty p{color:var(--muted);max-width:420px;margin:0 auto 19px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:13px}.cover{height:104px;border-radius:13px;background:linear-gradient(135deg,#45356e,#222c48);display:grid;place-items:center;font-size:43px;color:#d0c4ff}.card h3{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}.meta{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px}.actions .btn{flex:1;padding:11px}.del{border:1px solid var(--line);background:#222638;color:#c2c7d8;border-radius:12px;padding:0 13px;cursor:pointer}
+.import{margin-top:22px;border:1px solid var(--line);background:#171a29;border-radius:19px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:18px}.import p{color:var(--muted);font-size:13px;line-height:1.45;margin:6px 0 0}.notice{margin:16px 0 30px;color:#aab0c5;font-size:12px;line-height:1.55;padding:14px;border-left:3px solid #8064d2;background:#171a29;border-radius:0 12px 12px 0}
+.status{color:var(--muted);font-size:12px;min-height:17px;margin-top:9px}
+.player{position:fixed;inset:0;background:#06070b;z-index:5;display:flex;flex-direction:column}.toolbar{height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#171a28;border-bottom:1px solid #36394b}.toolbar button{background:none;border:0;color:#eee;font-size:15px}.toolbar strong{max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.frame{border:0;width:100%;height:calc(100% - 54px);background:#000}
+.modal{position:fixed;inset:0;background:#05060bd9;z-index:8;display:grid;place-items:center;padding:20px}.modalbox{width:min(440px,100%);background:#1c2030;border:1px solid #45405f;border-radius:20px;padding:23px}.modalbox h3{margin-top:0}.modalbox p{color:#bdc2d2;line-height:1.55}.hidden{display:none!important}
+footer{color:#6f7894;font-size:11px;padding:10px 0 25px;text-align:center}
+@media(max-width:540px){.hero{padding:21px}.orb{width:76px;height:76px;flex-basis:76px;font-size:37px;border-radius:24px}.import{align-items:flex-start;flex-direction:column}.import .btn{width:100%}.top{padding:15px 0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">R</div><div>Ren'Py Player<div class="sub">твоя библиотека визуальных новелл</div></div></div><span class="pill">iPhone · iOS</span></header>
+<section class="hero"><div><div class="eyebrow">ЛИЧНАЯ БИБЛИОТЕКА</div><h1>Твои истории.<br><span>В одном месте.</span></h1><p>Добавляй игры Ren'Py, собранные для Web / HTML5, и запускай их прямо на iPhone.</p></div><div class="orb">✦</div></section>
+<div class="section"><div><div class="eyebrow">КОЛЛЕКЦИЯ</div><h2>Мои игры <span class="count" id="count">0</span></h2></div><button class="btn" id="addTop">＋ Добавить</button></div>
+<div class="empty" id="empty"><div class="book">📖</div><h3>Пока здесь тихо</h3><p>Добавь ZIP-архив Web-сборки Ren'Py. Игра сохранится в библиотеке на этом устройстве.</p><button class="btn" id="addEmpty">Выбрать ZIP</button></div>
+<div class="grid" id="games"></div>
+<section class="import"><div><b>Добавить новую игру</b><p>Нужен ZIP из Ren'Py Launcher → Web → Build Web Application.</p><div class="status" id="status">Данные хранятся локально в браузере.</div></div><button class="btn" id="addBottom">Выбрать ZIP ↗</button></section>
+<div class="notice"><b>Важно о совместимости.</b> Запускаются только готовые Ren'Py Web/HTML5 ZIP-сборки, содержащие <code>index.html</code>, файл <code>.wasm</code> и <code>game.zip</code> или <code>.data</code>. Обычные Windows ZIP, исходники .rpy и отдельные .rpa напрямую не запускаются. Некоторые функции Python в Web-версии Ren'Py ограничены.</div>
+<footer>Ren'Py Player · первая версия · библиотека хранится на устройстве</footer>
+</div>
+<input id="zip" type="file" accept=".zip,application/zip" hidden>
+<div class="player hidden" id="player"><div class="toolbar"><button id="back">‹ Библиотека</button><strong id="playing">Игра</strong><button id="reload">↻</button></div><iframe class="frame" id="frame" title="Ren'Py game" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+<div class="modal hidden" id="modal"><div class="modalbox"><h3 id="modalTitle">Сообщение</h3><p id="modalText"></p><button class="btn" id="modalClose">Понятно</button></div></div>
+<script>
+(function(){
+'use strict';
+var DB='renpy-player-v1', db=null, games=[], active=null, base=new URL('./',location.href);
+function el(id){return document.getElementById(id);}
+function message(title,text){el('modalTitle').textContent=title;el('modalText').textContent=text;el('modal').classList.remove('hidden');}
+function openDB(){return new Promise(function(resolve,reject){var r=indexedDB.open(DB,1);r.onupgradeneeded=function(){var d=r.result;if(!d.objectStoreNames.contains('games'))d.createObjectStore('games',{keyPath:'id'});if(!d.objectStoreNames.contains('files')){var s=d.createObjectStore('files',{keyPath:'key'});s.createIndex('gameId','gameId',{unique:false});}};r.onsuccess=function(){resolve(r.result);};r.onerror=function(){reject(r.error);};});}
+function txDone(tx){return new Promise(function(resolve,reject){tx.oncomplete=resolve;tx.onerror=function(){reject(tx.error);};tx.onabort=function(){reject(tx.error);};});}
+function allGames(){return new Promise(function(resolve,reject){var r=db.transaction('games').objectStore('games').getAll();r.onsuccess=function(){resolve(r.result||[]);};r.onerror=function(){reject(r.error);};});}
+function saveGame(g){var t=db.transaction('games','readwrite');t.objectStore('games').put(g);return txDone(t);}
+function saveFile(id,path,data){var t=db.transaction('files','readwrite');t.objectStore('files').put({key:id+':'+path,gameId:id,path:path,data:data});return txDone(t);}
+function safePath(s){s=s.replace(/\\\\/g,'/');if(!s||s.charAt(0)==='/'||/^[a-z]:/i.test(s))return null;var p=s.split('/').filter(function(x){return x&&x!=='.';});if(!p.length||p.some(function(x){return x==='..'||x.indexOf('\\0')>=0;}))return null;return p.join('/');}
+async function zipEntries(file){
+var tail=file.slice(Math.max(0,file.size-65557)),buf=await tail.arrayBuffer(),v=new DataView(buf),e=-1;
+for(var i=v.byteLength-22;i>=0;i--){if(v.getUint32(i,true)===0x06054b50){e=i;break;}}
+if(e<0)throw Error('Архив не похож на ZIP или повреждён.');
+var count=v.getUint16(e+10,true),size=v.getUint32(e+12,true),off=v.getUint32(e+16,true);
+if(count===65535||size===4294967295||off===4294967295)throw Error('ZIP64 пока не поддерживается.');
+if(count>20000)throw Error('В архиве слишком много файлов.');
+var start=file.size-buf.byteLength+off,cb=await file.slice(start,start+size).arrayBuffer(),cv=new DataView(cb),dec=new TextDecoder(),out=[],pos=0;
+for(var n=0;n<count;n++){if(cv.getUint32(pos,true)!==0x02014b50)throw Error('Повреждён список файлов ZIP.');
+var flags=cv.getUint16(pos+8,true),method=cv.getUint16(pos+10,true),csize=cv.getUint32(pos+20,true),usize=cv.getUint32(pos+24,true),nl=cv.getUint16(pos+28,true),xl=cv.getUint16(pos+30,true),cl=cv.getUint16(pos+32,true),lo=cv.getUint32(pos+42,true),raw=dec.decode(cb.slice(pos+46,pos+46+nl)),path=safePath(raw);
+if(path&&!raw.endsWith('/')){if(flags&1)throw Error('ZIP зашифрован паролем.');if(![0,8].includes(method))throw Error('Неподдерживаемый метод сжатия: '+path);out.push({path:path,method:method,csize:csize,usize:usize,offset:lo});}
+pos+=46+nl+xl+cl;
+}
+if(!out.length)throw Error('Архив пустой.');return out;
+}
+async function extract(file,x){var h=await file.slice(x.offset,x.offset+30).arrayBuffer(),v=new DataView(h);if(v.getUint32(0,true)!==0x04034b50)throw Error('Повреждён заголовок: '+x.path);var p=x.offset+30+v.getUint16(26,true)+v.getUint16(28,true),compressed=await file.slice(p,p+x.csize).arrayBuffer(),data;
+if(x.method===0)data=compressed;else{if(!window.DecompressionStream)throw Error('В Safari нет поддержки ZIP Deflate. Обнови iOS.');data=await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();}
+if(data.byteLength!==x.usize)throw Error('Не совпал размер файла: '+x.path);return data;}
+function rootFor(entries){var ids=entries.filter(function(x){return /(^|\\/)index\\.html$/i.test(x.path);});if(!ids.length)throw Error('Не найден index.html. Нужна именно Ren\\'Py Web ZIP-сборка.');var best='',score=-999;
+ids.forEach(function(item){var root=item.path.slice(0,item.path.lastIndexOf('/')+1),paths=entries.filter(function(x){return x.path.indexOf(root)===0;}).map(function(x){return x.path.slice(root.length).toLowerCase();}),s=(paths.some(function(x){return x.endsWith('.wasm');})?10:0)+(paths.some(function(x){return x==='game.zip'||x==='game.data'||x.endsWith('.data');})?10:0)-root.split('/').length;if(s>score){score=s;best=root;}});return best;}
+async function importZip(file){
+if(!file||!file.name.toLowerCase().endsWith('.zip'))return;
+if(file.size>1024*1024*1024)throw Error('ZIP больше 1 ГБ — слишком большой для импорта на iPhone.');
+el('status').textContent='Читаю ZIP-архив…';var entries=await zipEntries(file),root=rootFor(entries),chosen=entries.filter(function(x){return x.path.indexOf(root)===0;}).map(function(x){x.path=x.path.slice(root.length);return x;}).filter(function(x){return x.path;});
+var hasWasm=chosen.some(function(x){return x.path.toLowerCase().endsWith('.wasm');}),hasData=chosen.some(function(x){return /(^|\\/)(game\\.zip|game\\.data)$/.test(x.path.toLowerCase())||x.path.toLowerCase().endsWith('.data');});
+if(!hasWasm||!hasData)throw Error('Не найдены .wasm и game.zip/game.data. На компьютере выбери Ren\\'Py Launcher → Web → Build Web Application.');
+var total=chosen.reduce(function(a,x){return a+x.usize;},0);if(total>700*1024*1024)throw Error('Распакованный размер превышает 700 МБ.');if(chosen.length>20000)throw Error('Слишком много файлов.');
+var id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()).replace(/[^a-z0-9-]/gi,''),name=file.name.replace(/\\.zip$/i,'').replace(/[\\\\/:*?"<>|]/g,' ').trim()||'Новая игра',count=0;
+try{for(var j=0;j<chosen.length;j++){var x=chosen[j],data=await extract(file,x);await saveFile(id,x.path,data);count++;el('status').textContent='Сохраняю файлы: '+count+' / '+chosen.length;}}
+catch(err){var clean=db.transaction('files','readwrite'),idx=clean.objectStore('files').index('gameId'),req=idx.openKeyCursor(IDBKeyRange.only(id));req.onsuccess=function(){var c=req.result;if(c){clean.objectStore('files').delete(c.primaryKey);c.continue();}};throw err;}
+await saveGame({id:id,name:name,addedAt:Date.now(),size:total,fileCount:count});el('status').textContent='Игра добавлена в библиотеку.';await render();
+}
+function fmt(n){return n>1024*1024?(n/1024/1024).toFixed(1)+' МБ':Math.max(1,Math.round(n/1024))+' КБ';}
+async function render(){games=await allGames();games.sort(function(a,b){return b.addedAt-a.addedAt;});el('count').textContent=games.length;el('empty').classList.toggle('hidden',games.length>0);el('games').replaceChildren();games.forEach(function(g){var card=document.createElement('article');card.className='card';var cover=document.createElement('div');cover.className='cover';cover.textContent='📖';var h=document.createElement('h3');h.textContent=g.name;var m=document.createElement('div');m.className='meta';m.textContent=fmt(g.size)+' · '+g.fileCount+' файлов';var actions=document.createElement('div');actions.className='actions';var play=document.createElement('button');play.className='btn';play.textContent='▶ Играть';play.onclick=function(){launch(g);};var del=document.createElement('button');del.className='del';del.textContent='Удалить';del.onclick=async function(){if(!confirm('Удалить '+g.name+' и все её файлы?'))return;var t=db.transaction(['games','files'],'readwrite');t.objectStore('games').delete(g.id);var c=t.objectStore('files').index('gameId').openKeyCursor(IDBKeyRange.only(g.id));c.onsuccess=function(){var q=c.result;if(q){t.objectStore('files').delete(q.primaryKey);q.continue();}};await txDone(t);render();};actions.append(play,del);card.append(cover,h,m,actions);el('games').append(card);});}
+function launch(g){if(!navigator.serviceWorker.controller){message('Перезагрузи плеер','Сервер игр активируется при первом открытии. Обнови страницу и нажми «Играть» ещё раз.');return;}active=g;el('playing').textContent=g.name;el('frame').src=new URL('__game__/'+encodeURIComponent(g.id)+'/index.html',base).href;el('player').classList.remove('hidden');}
+function closePlayer(){el('frame').src='about:blank';el('player').classList.add('hidden');active=null;}
+function choose(){el('zip').click();}
+el('addTop').onclick=choose;el('addEmpty').onclick=choose;el('addBottom').onclick=choose;el('zip').onchange=async function(){var f=el('zip').files[0];el('zip').value='';if(!f)return;try{await importZip(f);}catch(e){el('status').textContent='Ошибка импорта';message('Не удалось добавить игру',e.message||String(e));}};
+el('modalClose').onclick=function(){el('modal').classList.add('hidden');};el('back').onclick=closePlayer;el('reload').onclick=function(){if(active)el('frame').src=new URL('__game__/'+encodeURIComponent(active.id)+'/index.html',base).href;};
+openDB().then(async function(d){db=d;await render();if('serviceWorker'in navigator){await navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'});await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller&&!sessionStorage.getItem('rp-sw-reload')){sessionStorage.setItem('rp-sw-reload','1');location.reload();}else sessionStorage.removeItem('rp-sw-reload');}}).catch(function(e){message('Ошибка запуска библиотеки','Проверь Safari и отключи приватный режим. '+(e.message||e));});
+})();
+</script>
+</body>
+</html>
