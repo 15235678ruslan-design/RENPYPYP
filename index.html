@@ -53,7 +53,7 @@ function txDone(tx){return new Promise(function(resolve,reject){tx.oncomplete=re
 function allGames(){return new Promise(function(resolve,reject){var r=db.transaction('games').objectStore('games').getAll();r.onsuccess=function(){resolve(r.result||[]);};r.onerror=function(){reject(r.error);};});}
 function saveGame(g){var t=db.transaction('games','readwrite');t.objectStore('games').put(g);return txDone(t);}
 function saveFile(id,path,data){var t=db.transaction('files','readwrite');t.objectStore('files').put({key:id+':'+path,gameId:id,path:path,data:data});return txDone(t);}
-function safePath(s){s=s.replace(/\\\\/g,'/');if(!s||s.charAt(0)==='/'||/^[a-z]:/i.test(s))return null;var p=s.split('/').filter(function(x){return x&&x!=='.';});if(!p.length||p.some(function(x){return x==='..'||x.indexOf('\\0')>=0;}))return null;return p.join('/');}
+function safePath(s){s=s.split(String.fromCharCode(92)).join('/');if(!s||s.charAt(0)==='/'||(s.length>1&&s.charAt(1)===':'&&/[a-z]/i.test(s.charAt(0))))return null;var p=s.split('/').filter(function(x){return x&&x!=='.';});if(!p.length||p.some(function(x){return x==='..'||x.indexOf(String.fromCharCode(0))>=0;}))return null;return p.join('/');}
 async function zipEntries(file){
 var tail=file.slice(Math.max(0,file.size-65557)),buf=await tail.arrayBuffer(),v=new DataView(buf),e=-1;
 for(var i=v.byteLength-22;i>=0;i--){if(v.getUint32(i,true)===0x06054b50){e=i;break;}}
@@ -72,16 +72,16 @@ if(!out.length)throw Error('Архив пустой.');return out;
 async function extract(file,x){var h=await file.slice(x.offset,x.offset+30).arrayBuffer(),v=new DataView(h);if(v.getUint32(0,true)!==0x04034b50)throw Error('Повреждён заголовок: '+x.path);var p=x.offset+30+v.getUint16(26,true)+v.getUint16(28,true),compressed=await file.slice(p,p+x.csize).arrayBuffer(),data;
 if(x.method===0)data=compressed;else{if(!window.DecompressionStream)throw Error('В Safari нет поддержки ZIP Deflate. Обнови iOS.');data=await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();}
 if(data.byteLength!==x.usize)throw Error('Не совпал размер файла: '+x.path);return data;}
-function rootFor(entries){var ids=entries.filter(function(x){return /(^|\\/)index\\.html$/i.test(x.path);});if(!ids.length)throw Error('Не найден index.html. Нужна именно Ren\\'Py Web ZIP-сборка.');var best='',score=-999;
+function rootFor(entries){var ids=entries.filter(function(x){var p=x.path.toLowerCase();return p==='index.html'||p.endsWith('/index.html');});if(!ids.length)throw Error("Не найден index.html. Нужна именно Ren'Py Web ZIP-сборка.");var best='',score=-999;
 ids.forEach(function(item){var root=item.path.slice(0,item.path.lastIndexOf('/')+1),paths=entries.filter(function(x){return x.path.indexOf(root)===0;}).map(function(x){return x.path.slice(root.length).toLowerCase();}),s=(paths.some(function(x){return x.endsWith('.wasm');})?10:0)+(paths.some(function(x){return x==='game.zip'||x==='game.data'||x.endsWith('.data');})?10:0)-root.split('/').length;if(s>score){score=s;best=root;}});return best;}
 async function importZip(file){
 if(!file||!file.name.toLowerCase().endsWith('.zip'))return;
 if(file.size>1024*1024*1024)throw Error('ZIP больше 1 ГБ — слишком большой для импорта на iPhone.');
 el('status').textContent='Читаю ZIP-архив…';var entries=await zipEntries(file),root=rootFor(entries),chosen=entries.filter(function(x){return x.path.indexOf(root)===0;}).map(function(x){x.path=x.path.slice(root.length);return x;}).filter(function(x){return x.path;});
-var hasWasm=chosen.some(function(x){return x.path.toLowerCase().endsWith('.wasm');}),hasData=chosen.some(function(x){return /(^|\\/)(game\\.zip|game\\.data)$/.test(x.path.toLowerCase())||x.path.toLowerCase().endsWith('.data');});
-if(!hasWasm||!hasData)throw Error('Не найдены .wasm и game.zip/game.data. На компьютере выбери Ren\\'Py Launcher → Web → Build Web Application.');
+var hasWasm=chosen.some(function(x){return x.path.toLowerCase().endsWith('.wasm');}),hasData=chosen.some(function(x){var p=x.path.toLowerCase();return p==='game.zip'||p==='game.data'||p.endsWith('/game.zip')||p.endsWith('/game.data')||p.endsWith('.data');});
+if(!hasWasm||!hasData)throw Error("Не найдены .wasm и game.zip/game.data. На компьютере выбери Ren'Py Launcher → Web → Build Web Application.");
 var total=chosen.reduce(function(a,x){return a+x.usize;},0);if(total>700*1024*1024)throw Error('Распакованный размер превышает 700 МБ.');if(chosen.length>20000)throw Error('Слишком много файлов.');
-var id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()).replace(/[^a-z0-9-]/gi,''),name=file.name.replace(/\\.zip$/i,'').replace(/[\\\\/:*?"<>|]/g,' ').trim()||'Новая игра',count=0;
+var id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()).replace(/[^a-z0-9-]/gi,'');var name=file.name.slice(0,-4);[String.fromCharCode(92),'/',':','*','?','"','<','>','|'].forEach(function(ch){name=name.split(ch).join(' ');});name=name.trim()||'Новая игра';var count=0;
 try{for(var j=0;j<chosen.length;j++){var x=chosen[j],data=await extract(file,x);await saveFile(id,x.path,data);count++;el('status').textContent='Сохраняю файлы: '+count+' / '+chosen.length;}}
 catch(err){var clean=db.transaction('files','readwrite'),idx=clean.objectStore('files').index('gameId'),req=idx.openKeyCursor(IDBKeyRange.only(id));req.onsuccess=function(){var c=req.result;if(c){clean.objectStore('files').delete(c.primaryKey);c.continue();}};throw err;}
 await saveGame({id:id,name:name,addedAt:Date.now(),size:total,fileCount:count});el('status').textContent='Игра добавлена в библиотеку.';await render();
