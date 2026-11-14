@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10131d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ren'Py Player">
+  <meta name="description" content="Локальная библиотека визуальных новелл Ren'Py Web для iPhone и других устройств.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Ren'Py Player</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Ren'Py Player — главная">
+        <span class="brand-mark" aria-hidden="true">R<span>+</span></span>
+        <span class="brand-copy"><strong>Ren'Py Player</strong><small>твоя библиотека новелл</small></span>
+      </a>
+      <button id="installHelp" class="icon-button" type="button" aria-label="Как установить">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow"><i class="status-dot"></i> Локальная библиотека</span>
+          <h1>Твои истории.<br><span>В одном месте.</span></h1>
+          <p>Добавляй Ren'Py-игры, собранные для Web / HTML5, и запускай их прямо в Safari.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+          <div class="art-book"><span>R</span><i></i><b></b></div>
+          <div class="art-star star-one">✦</div><div class="art-star star-two">✧</div>
+        </div>
+      </section>
+
+      <section class="library-section" aria-labelledby="libraryTitle">
+        <div class="section-heading">
+          <div><span class="eyebrow muted">КОЛЛЕКЦИЯ</span><h2 id="libraryTitle">Мои игры <span id="gameCount" class="count">0</span></h2></div>
+          <button id="sortButton" class="sort-button" type="button" aria-label="Сортировка: новые сверху">Новые <span>↓</span></button>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 15.5c0-3 2.5-5.5 5.5-5.5H46c3 0 5 2 5 5v39H19c-3.3 0-6-2.7-6-6V15.5Z"/><path d="M13 46c0-3.3 2.7-6 6-6h32M25 22h14M25 29h10"/></svg></div>
+          <h3>Пока здесь тихо</h3>
+          <p>Добавь первую новеллу в формате Ren'Py Web ZIP — она появится в этой библиотеке.</p>
+          <button id="emptyAddButton" class="primary-button" type="button"><span>＋</span> Добавить игру</button>
+        </div>
+
+        <div id="gameGrid" class="game-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="import-panel" aria-labelledby="importTitle">
+        <div class="import-symbol"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5v15m0 0 5-5m-5 5-5-5M6 22v4h20v-4"/></svg></div>
+        <div class="import-copy">
+          <h2 id="importTitle">Добавить новую игру</h2>
+          <p>Нужен ZIP, созданный кнопкой <b>Build Web Application</b> в Ren'Py Launcher.</p>
+          <div class="import-meta"><span>ZIP</span><span>HTML</span><span>WASM</span><span>GAME DATA</span></div>
+        </div>
+        <button id="addButton" class="primary-button" type="button">Выбрать ZIP <span>↗</span></button>
+        <input id="zipInput" type="file" accept=".zip,application/zip,application/x-zip-compressed" hidden>
+      </section>
+
+      <aside class="notice-card">
+        <div class="notice-icon">ⓘ</div>
+        <div><strong>Важно о совместимости</strong><p>Плеер запускает именно Web/HTML5-сборки Ren'Py. Обычные Windows ZIP, папки с <code>.rpy</code> и архивы <code>.rpa</code> напрямую не запускаются.</p></div>
+      </aside>
+    </main>
+
+    <footer><span>Ren'Py Player · личная библиотека</span><button id="aboutButton" type="button">О совместимости</button></footer>
+  </div>
+
+  <div id="progressModal" class="modal" hidden>
+    <div class="modal-card progress-card" role="dialog" aria-modal="true" aria-labelledby="progressTitle">
+      <div class="spinner"></div><h2 id="progressTitle">Добавляем игру…</h2>
+      <p id="progressText">Проверяем ZIP-архив.</p>
+      <div class="progress-track"><div id="progressBar"></div></div>
+      <button id="cancelImport" class="text-button" type="button">Отмена</button>
+    </div>
+  </div>
+
+  <div id="messageModal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="messageTitle">
+      <div id="messageIcon" class="message-icon">!</div><h2 id="messageTitle">Сообщение</h2><p id="messageText"></p>
+      <button id="messageClose" class="primary-button full-button" type="button">Понятно</button>
+    </div>
+  </div>
+
+  <div id="helpModal" class="modal" hidden>
+    <div class="modal-card help-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="modal-close" data-close="helpModal" aria-label="Закрыть" type="button">×</button>
+      <span class="eyebrow muted">ПЕРВЫЙ ЗАПУСК</span><h2 id="helpTitle">Установи на iPhone</h2>
+      <ol class="help-steps">
+        <li><b>Открой сайт в Safari</b><span>После публикации проекта перейди по адресу сайта именно через Safari.</span></li>
+        <li><b>Нажми «Поделиться»</b><span>В нижней панели Safari нажми квадрат со стрелкой вверх.</span></li>
+        <li><b>Выбери «На экран Домой»</b><span>Подтверди добавление. Плеер появится среди приложений.</span></li>
+        <li><b>Добавь Web ZIP</b><span>В Ren'Py Launcher на компьютере выбери Web → Build Web Application, затем перенеси полученный ZIP на iPhone.</span></li>
+      </ol>
+      <div class="help-tip">Совет: не закрывай Safari во время первого импорта большой игры и оставь достаточно свободного места.</div>
+      <button class="primary-button full-button" data-close="helpModal" type="button">Понятно</button>
+    </div>
+  </div>
+
+  <div id="playerScreen" class="player-screen" hidden>
+    <div class="player-toolbar">
+      <button id="closeGame" class="player-back" type="button"><span>‹</span> Библиотека</button>
+      <div id="playingTitle" class="playing-title">Игра</div>
+      <button id="reloadGame" class="player-reload" type="button" aria-label="Перезапустить игру">↻</button>
+    </div>
+    <div id="gameFrameWrap" class="game-frame-wrap"><iframe id="gameFrame" title="Ren'Py игра" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
