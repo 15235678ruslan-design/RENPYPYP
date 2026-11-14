@@ -19,6 +19,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Check JavaScript and manifest
+        run: |
+          node --check sw.js
+          node -e "const fs=require('fs');const h=fs.readFileSync('index.html','utf8');const m=h.match(/<script>([\\s\\S]*?)<\\/script>/);if(!m)throw new Error('No inline app script found');fs.writeFileSync('/tmp/renpy-player-inline.js',m[1]);JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));"
+          node --check /tmp/renpy-player-inline.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
